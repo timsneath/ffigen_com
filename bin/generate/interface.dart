@@ -34,8 +34,7 @@ class Interface {
   late List<Method> methods;
 
   String get headerAsString {
-    final buffer = StringBuffer();
-    buffer.writeln('''
+    final buffer = StringBuffer()..writeln('''
 // $name.dart
 
 // THIS FILE IS GENERATED AUTOMATICALLY.
@@ -57,11 +56,13 @@ import 'package:win32/win32.dart' hide IUnknown, IDispatch, IInspectable;
   String get guidConstantsAsString {
     final buffer = StringBuffer();
     if (generateClass) {
-      buffer.writeln('/// @nodoc');
-      buffer.writeln("const CLSID_$className = '{${clsid.toString()}}';");
+      buffer
+        ..writeln('/// @nodoc')
+        ..writeln("const CLSID_$className = '{${clsid.toString()}}';");
     }
-    buffer.writeln('/// @nodoc');
-    buffer.writeln("const IID_$name = '{${iid.toString()}}';\n");
+    buffer
+      ..writeln('/// @nodoc')
+      ..writeln("const IID_$name = '{${iid.toString()}}';\n");
     return buffer.toString();
   }
 
@@ -69,9 +70,10 @@ import 'package:win32/win32.dart' hide IUnknown, IDispatch, IInspectable;
     final buffer = StringBuffer();
     for (final method in methods) {
       // Native typedef
-      buffer.writeln(
-          'typedef _${method.name}_Native = ${method.returnType} Function(');
-      buffer.write('  Pointer obj');
+      buffer
+        ..writeln(
+            'typedef _${method.name}_Native = ${method.returnType} Function(')
+        ..write('  Pointer obj');
       if (method.parameters.isNotEmpty) {
         buffer.writeln(',');
       }
@@ -81,12 +83,13 @@ import 'package:win32/win32.dart' hide IUnknown, IDispatch, IInspectable;
         if (idx < method.parameters.length - 1) buffer.write(', ');
         buffer.writeln();
       }
-      buffer.writeln(');');
+      buffer
+        ..writeln(');')
 
-      // Dart typedef
-      buffer.writeln(
-          'typedef _${method.name}_Dart = ${dartType(method.returnType)} Function(');
-      buffer.write('  Pointer obj');
+        // Dart typedef
+        ..writeln(
+            'typedef _${method.name}_Dart = ${dartType(method.returnType)} Function(')
+        ..write('  Pointer obj');
       if (method.parameters.isNotEmpty) {
         buffer.writeln(',');
       }
@@ -96,8 +99,9 @@ import 'package:win32/win32.dart' hide IUnknown, IDispatch, IInspectable;
         if (idx < method.parameters.length - 1) buffer.write(', ');
         buffer.writeln();
       }
-      buffer.writeln(');');
-      buffer.writeln();
+      buffer
+        ..writeln(');')
+        ..writeln();
     }
 
     return buffer.toString();
@@ -161,13 +165,13 @@ import 'package:win32/win32.dart' hide IUnknown, IDispatch, IInspectable;
         buffer.write(', ');
       }
     }
-    buffer.writeln(') =>');
-    buffer.write(
-        '    Pointer<NativeFunction<_${method.name}_Native>>.fromAddress(\n');
-    buffer.write(
-        '                ptr.ref.vtable.elementAt($vtableIndex).value)\n');
-    buffer.write('            .asFunction<_${method.name}_Dart>()(\n');
-    buffer.write('         ptr.ref.lpVtbl');
+    buffer
+      ..writeln(') =>')
+      ..write(
+          '    Pointer<NativeFunction<_${method.name}_Native>>.fromAddress(\n')
+      ..write('                ptr.ref.vtable.elementAt($vtableIndex).value)\n')
+      ..write('            .asFunction<_${method.name}_Dart>()(\n')
+      ..write('         ptr.ref.lpVtbl');
     if (method.parameters.isNotEmpty) {
       buffer.write(', ');
     }
@@ -194,16 +198,16 @@ import 'package:win32/win32.dart' hide IUnknown, IDispatch, IInspectable;
       exposedMethodName = exposedMethodName.substring(1);
     }
 
-    buffer.writeln('  ${dartType(method.returnType)} get $exposedMethodName {');
-    buffer.writeln('    final retValuePtr = calloc<$rootType>();');
-    buffer.writeln();
-    buffer.writeln(
-        '    final hr = Pointer<NativeFunction<_${method.name}_Native>>.fromAddress(');
-    buffer.writeln(
-        '                ptr.ref.vtable.elementAt($vtableIndex).value)');
-    buffer.writeln(
-        '       .asFunction<_${method.name}_Dart>()(ptr.ref.lpVtbl, retValuePtr);');
-    buffer.writeln('''
+    buffer
+      ..writeln('  ${dartType(method.returnType)} get $exposedMethodName {')
+      ..writeln('    final retValuePtr = calloc<$rootType>();')
+      ..writeln()
+      ..writeln(
+          '    final hr = Pointer<NativeFunction<_${method.name}_Native>>.fromAddress(')
+      ..writeln('                ptr.ref.vtable.elementAt($vtableIndex).value)')
+      ..writeln(
+          '       .asFunction<_${method.name}_Dart>()(ptr.ref.lpVtbl, retValuePtr);')
+      ..writeln('''
        if (FAILED(hr)) throw WindowsException(hr);
 
        final retValue = retValuePtr.value;
@@ -215,9 +219,7 @@ import 'package:win32/win32.dart' hide IUnknown, IDispatch, IInspectable;
   }
 
   String dartSetProperty(Method method, int? vtableIndex) {
-    final buffer = StringBuffer();
-
-    buffer.writeln('''
+    final buffer = StringBuffer()..writeln('''
   set ${method.name.substring(4)}(${dartType(method.returnType)} value) {
     final hr = Pointer<NativeFunction<_${method.name}_Native>>.fromAddress(
             ptr.ref.vtable.elementAt($vtableIndex).value)

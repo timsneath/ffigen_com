@@ -29,9 +29,10 @@ Method parseIdlMethod(String line, int lineIndex) {
 
   final methodStart = line.indexOf('HRESULT ') + 8;
   final methodEnd = line.indexOf('(', methodStart);
-  method.name = line.substring(methodStart, methodEnd);
-  method.returnType = 'Int32';
-  method.parameters = [];
+  method
+    ..name = line.substring(methodStart, methodEnd)
+    ..returnType = 'Int32'
+    ..parameters = [];
 
   if (line.contains('[propget]')) {
     method.name = 'get_${method.name}';
@@ -88,8 +89,9 @@ Method parseIdlMethod(String line, int lineIndex) {
         typePrimitive = dartTypePrimitive;
       }
 
-      parameter.type = typePrimitive;
-      parameter.name = items[1].replaceAll('*', '');
+      parameter
+        ..type = typePrimitive
+        ..name = items[1].replaceAll('*', '');
 
       method.parameters.add(parameter);
     }
@@ -100,8 +102,7 @@ Method parseIdlMethod(String line, int lineIndex) {
 
 Interface loadSource(File file) {
   var isInMethod = false;
-  final interface = Interface();
-  interface.methods = [];
+  final interface = Interface()..methods = [];
   Method? method;
 
   if (file.path.endsWith('.h')) {
@@ -123,9 +124,10 @@ Interface loadSource(File file) {
         interface.vtableStart = int.parse(line.split(' ').last);
       }
       if (line.startsWith('// class')) {
-        interface.generateClass = true;
-        interface.className = line.split(' ')[2];
-        interface.clsid = line.split(' ')[3];
+        interface
+          ..generateClass = true
+          ..className = line.split(' ')[2]
+          ..clsid = line.split(' ')[3];
       }
       if (line.startsWith('MIDL_INTERFACE')) {
         final start = line.indexOf('"') + 1;
@@ -140,19 +142,22 @@ Interface loadSource(File file) {
       if (line.contains(' : ') || line == 'IUnknown') {
         // class declaration
         if (line == 'IUnknown') {
-          interface.name = line;
-          interface.inherits = '';
+          interface
+            ..name = line
+            ..inherits = '';
         } else {
           final keywords = line.split(' ');
-          interface.name = keywords[0];
-          interface.inherits = keywords[keywords.length - 1];
+          interface
+            ..name = keywords[0]
+            ..inherits = keywords[keywords.length - 1];
         }
       }
       if (line.startsWith('interface ')) {
         // IDL interface declaration
         final keywords = line.split(' ');
-        interface.name = keywords[1];
-        interface.inherits = keywords[3];
+        interface
+          ..name = keywords[1]
+          ..inherits = keywords[3];
       }
       if (line.contains('STDMETHODCALLTYPE') ||
           line.startsWith('[propget]') ||
@@ -164,21 +169,24 @@ Interface loadSource(File file) {
         if (interface.sourceType == SourceType.header) {
           final keywords = line.trimRight().split(' ');
           final lastKeyword = keywords[keywords.length - 1];
-          method.name = lastKeyword.substring(0, lastKeyword.length - 1);
-          method.returnType = 'Int32';
-          method.parameters = [];
+          method
+            ..name = lastKeyword.substring(0, lastKeyword.length - 1)
+            ..returnType = 'Int32'
+            ..parameters = [];
           isInMethod = true;
 
           // Special case for void methods
           if (line.contains('( void) = 0;')) {
-            method.name = keywords[keywords.indexOf('void)') - 1];
-            method.name = method.name.substring(0, method.name.length - 1);
+            method
+              ..name = keywords[keywords.indexOf('void)') - 1]
+              ..name = method.name.substring(0, method.name.length - 1);
             interface.methods.add(method);
             isInMethod = false;
           } else if (line.contains('(void) = 0;')) {
-            method.name = keywords[
-                keywords.indexWhere((keyword) => keyword.contains('(void)'))];
-            method.name = method.name.substring(0, method.name.length - 6);
+            method
+              ..name = keywords[
+                  keywords.indexWhere((keyword) => keyword.contains('(void)'))]
+              ..name = method.name.substring(0, method.name.length - 6);
             interface.methods.add(method);
             isInMethod = false;
           }
@@ -251,8 +259,9 @@ Interface loadSource(File file) {
 void trimPointer(Parameter parameter) {
   if (parameter.name!.startsWith('**')) {
     // double pointer
-    parameter.type = 'Pointer<IntPtr>';
-    parameter.name = parameter.name!.substring(2);
+    parameter
+      ..type = 'Pointer<IntPtr>'
+      ..name = parameter.name!.substring(2);
   }
   if (parameter.name!.startsWith('*')) {
     // pointer

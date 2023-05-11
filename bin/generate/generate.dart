@@ -19,9 +19,8 @@ void main(List<String> args) {
     if (inputFile is File) {
       print('Converting:    ${inputFile.path}');
       final parsedFile = loadSource(inputFile);
-      final outputFile =
-          File('${outputDirectory.uri.toFilePath()}${parsedFile.name}.dart');
-      outputFile.writeAsStringSync(parsedFile.toString());
+      File('${outputDirectory.uri.toFilePath()}${parsedFile.name}.dart')
+          .writeAsStringSync(parsedFile.toString());
     }
   }
 }
